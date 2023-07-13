@@ -1,5 +1,3 @@
-from typing import Union
-from worker import tasks
 from celery.result import AsyncResult
 from fastapi import FastAPI
 from pydantic import BaseModel

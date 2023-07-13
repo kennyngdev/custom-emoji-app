@@ -3,6 +3,16 @@
 ## Usage
 Swagger URL: http://localhost:8000/docs
 
+## TODO LIST
+1. make some endpoints to check redis usability
+2. make upload image endpoint that:
+   - allows uploading image
+   - transform image to 100*100 thumbnails through celery worker
+   - allow task status to be checked through Job ID ("processing", "succeeded", "failed")
+   - task should save thumbnail into DB
+3. make endpoint to fetch thumbnail from DB (by key and fetch all)
+4. make endpoint to list all tasks
+5. write tests
 
 ## Introduction
 This is an API application that allows user to create custom emojis for communication apps, which allows them to create small thumbnail images.
