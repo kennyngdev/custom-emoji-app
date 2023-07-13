@@ -8,4 +8,4 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD celery -A worker.tasks flower --port=5555
+CMD celery -A worker.tasks worker

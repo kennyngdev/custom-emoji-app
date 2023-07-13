@@ -19,7 +19,7 @@ def read_root():
 
 @app.post("/example_task")
 def run_task(input_dto: ExampleInputModel):
-    json_body = input_dto.dict()
+    json_body = input_dto.model_dump()
     result = example_task.delay(json_body)
     return {'task_id': result.id}
 
