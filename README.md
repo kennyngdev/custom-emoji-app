@@ -1,21 +1,38 @@
-# FastAPI and Celery Integration Example
+# Cogent Labs Assignment
+
+## Usage
+Swagger URL: http://localhost:8000/docs
+
 
 ## Introduction
-This repository provides a stripped-down demonstration of how to integrate FastAPI with Celery. To keep things straightforward and accessible, this example does not utilize Flower, differentiating it from other similar examples available on GitHub.
+This is an API application that allows user to create custom emojis for communication apps, which allows them to create small thumbnail images.
+Utilizing a log-running task queue, it can fulfill the functionalities of accepting image files, 
+creating thumbnails and allowing them to be fetched when done processing.
 
-In this scenario, RabbitMQ serves as the message broker, while Redis functions as the result backend. We also illustrate how to incorporate async functions within Celery tasks.
 
-(In `rpc-backend` branch, I also make an alternative in which rpc is used instead of redis for the result backend. Here is a brief comparison from the official celery documentation: https://docs.celeryq.dev/en/stable/getting-started/backends-and-brokers/index.html)
+## Spec
+1. A user should be able to submit an image to an API endpoint. The API should save the image somewhere and initiate a long-running
+job to generate a thumbnail of the image with a fixed size of 100x100. The user should receive a job ID that they can use to check the
+status of the job later.
+2. A user should be able to check the status of a job by submitting its ID to the API. The API should return the current status of the job (e.g.
+"processing", "succeeded", "failed").
+3. A user should be able to fetch the thumbnail image via API once the Job has succeeded processing.
+4. A user should be able to list all of the submitted jobs via API in case they forgot one of their Job ID.
+
+* You do NOT need to support multiple user accounts or authorization. Instead, you can assume that anyone with access to the API is allowed
+to perform any API operation (viewing processed thumbnails, etc.).
+* MUST be packaged into Docker Containers
+* MUST be packaged via Helm so they can be deployed into a kubernetes cluster
+* MUST provide basic unit/integration tests that are easily runnable
+* No UI Needed
 
 ## Setup and Installation
 ### Using Docker 
 1. To host the project, start by building the Docker images for Celery and the API, using the commands below:
 
     ```
-    # Build the Celery image
+    # Build the Celery and the api image
     docker build . -f worker.Dockerfile -t worker
-
-    # Build the API image
     docker build . -f api.Dockerfile -t api 
     ```
 
@@ -37,7 +54,3 @@ This API offers three main endpoints:
 
 - `GET result`: Retrieves the result of a completed task using its ID.
 
-## Support
-If you find this project useful, please consider giving the repository a star! 
-
-For any queries or feedback, reach out to the author, Kenny Ng, at contact@kennyng.dev.
