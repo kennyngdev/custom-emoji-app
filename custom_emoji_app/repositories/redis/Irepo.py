@@ -1,19 +1,20 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
 
 class IRedisRepo(ABC):
     @abstractmethod
-    async def get_cache(self, key: str):
+    async def get_data_by_key(self, key: str):
         pass
 
     @abstractmethod
-    async def get_all_cache(self):
+    async def get_all_data(self):
         pass
 
     @abstractmethod
-    async def set_cache(self):
+    async def set_data(self, key: str, value: Any):
         pass
 
     @abstractmethod
-    async def delete_cache_with_key(self, key):
+    async def delete_data_by_key(self, key: str):
         pass

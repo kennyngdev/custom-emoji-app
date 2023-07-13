@@ -1,30 +1,33 @@
 import os
+from typing import Any
 
 import jsonpickle
 import redis.asyncio as redis
+from dotenv import load_dotenv
 
 from custom_emoji_app.repositories.redis.Irepo import IRedisRepo
+
+load_dotenv()
 
 
 class RedisRepo(IRedisRepo):
     def __init__(self):
         # read redis configuration parameter from env
         self.connection_parameter = {
-            "host": os.getenv("REDIS_HOST"),
+            "host": 'redis',
             "port": os.getenv("REDIS_PORT"),
-            "password": os.getenv("REDIS_PASS"),
-            "ssl": True if os.getenv("REDIS_SSL_ENABLED") == "ON" else False,
             "db": 0}
 
     def __get_connection(self):
-            return redis.Redis(**self.connection_parameter)
-    async def get_cache(self, key):
+        return redis.Redis(**self.connection_parameter)
+
+    async def get_data_by_key(self, key: str):
         connection = self.__get_connection()
         res = await connection.get(key)
         await connection.close()
         return res
 
-    async def get_all_cache(self):
+    async def get_all_data(self):
         connection = self.__get_connection()
         res = dict()
         async for key in connection.scan_iter():
@@ -33,13 +36,13 @@ class RedisRepo(IRedisRepo):
             res[decoded_key] = val.decode("utf-8")
         return res
 
-    async def set_cache(self, key, value):
+    async def set_data(self, key: str, value: Any):
         print("start storing cache")
         connection = self.__get_connection()
         await connection.set(key, jsonpickle.encode(value))
         await connection.close()
 
-    async def delete_cache_with_key(self, key):
+    async def delete_data_by_key(self, key):
         connection = self.__get_connection()
         await connection.delete(key)
         await connection.close()

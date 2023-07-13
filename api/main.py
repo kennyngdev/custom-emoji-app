@@ -1,9 +1,13 @@
 from celery.result import AsyncResult
 from fastapi import FastAPI
 from pydantic import BaseModel
+
+from api.redis_router import redis_router
 from worker.tasks import example_task
 
+
 app = FastAPI()
+app.include_router(redis_router)
 
 
 class ExampleInputModel(BaseModel):
