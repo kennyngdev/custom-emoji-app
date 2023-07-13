@@ -4,7 +4,7 @@
 Swagger URL: http://localhost:8000/docs
 
 ## TODO LIST
-1. make some endpoints to check redis usability
+1. make some endpoints to check redis usability DONE
 2. make upload image endpoint that:
    - allows uploading image
    - transform image to 100*100 thumbnails through celery worker

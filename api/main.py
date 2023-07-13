@@ -1,46 +1,11 @@
-from celery.result import AsyncResult
 from fastapi import FastAPI
-from pydantic import BaseModel
 
+from api.custom_emoji_router import custom_emoji_router
 from api.redis_router import redis_router
-from worker.tasks import example_task
-
+from api.task_queue_router import task_queue_router
 
 app = FastAPI()
+app.include_router(custom_emoji_router)
+app.include_router(task_queue_router)
 app.include_router(redis_router)
 
-
-class ExampleInputModel(BaseModel):
-    message: str = ''
-
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
-
-@app.post("/example_task")
-def run_task(input_dto: ExampleInputModel):
-    json_body = input_dto.model_dump()
-    result = example_task.delay(json_body)
-    return {'task_id': result.id}
-
-
-@app.get("/status")
-def get_task_status(task_id):
-    task_result = AsyncResult(id=task_id)
-    res = {
-        "id": task_id,
-        "status": task_result.ready()
-    }
-    return res
-
-
-@app.get("/result")
-def get_result(task_id):
-    task_result = AsyncResult(task_id)
-    result = {
-        "id": task_id,
-        "task_result": task_result.get()
-    }
-    return result
