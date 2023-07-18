@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose --file docker-compose.yml convert -c
+    kompose.version: 1.28.0 (c4137012e)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: task-queue-dashboard
+  name: task-queue-dashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: task-queue-dashboard
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose --file docker-compose.yml convert -c
+        kompose.version: 1.28.0 (c4137012e)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/cogent-labs-assignment-default: "true"
+        io.kompose.service: task-queue-dashboard
+    spec:
+      containers:
+        - args:
+            - celery
+            - -A
+            - worker.tasks
+            - flower
+            - --port=5555
+          image: worker:latest
+          name: task-queue-dashboard
+          ports:
+            - containerPort: 5555
+          resources: {}
+      restartPolicy: Always
+status: {}

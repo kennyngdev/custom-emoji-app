@@ -1,5 +1,8 @@
 # Cogent Labs Assignment
 
+## Tech Stack
+Tool: Kompose
+
 ## Usage
 Swagger URL: http://localhost:8000/docs
 
