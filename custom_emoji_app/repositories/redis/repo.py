@@ -2,69 +2,53 @@ import os
 from typing import Any
 
 import jsonpickle
-import redis.asyncio as redis
+import redis
 from dotenv import load_dotenv
-
-from custom_emoji_app.repositories.redis.Irepo import IRedisRepo
 
 load_dotenv()
 
 
-class RedisRepo(IRedisRepo):
+class RedisRepository:
     def __init__(self):
         # read redis configuration parameter from env
         self.connection_parameter = {
-            "host": 'redis',
-            "port": os.getenv("REDIS_PORT"),
-            "db": 0}
+            "host": os.getenv('REDIS_HOST'),
+            "port": os.getenv('REDIS_PORT'),
+            "db": os.getenv('REDIS_DB')}
+        self.client = redis.Redis(**self.connection_parameter)
 
-    def __get_connection(self):
-        return redis.Redis(**self.connection_parameter)
+    def get_data_by_key(self, key: str):
+        res = self.client.get(key)
+        if res:
+            return res.decode('utf-8')
+        raise ValueError(f'No value found by the key {key}')
 
-    async def get_data_by_key(self, key: str):
-        connection = self.__get_connection()
-        res = await connection.get(key)
-        await connection.close()
-        return res
-
-    async def get_all_data(self):
-        connection = self.__get_connection()
+    def get_all_data(self):
         res = dict()
-        async for key in connection.scan_iter():
+        for key in self.client.scan_iter():
             decoded_key = key.decode("utf-8")
-            val = await connection.get(key)
+            val = self.client.get(key)
             res[decoded_key] = val.decode("utf-8")
         return res
 
-    async def set_data(self, key: str, value: Any):
-        print("start storing cache")
-        connection = self.__get_connection()
-        await connection.set(key, jsonpickle.encode(value))
-        await connection.close()
+    def set_data(self, key: str, value: Any):
+        self.client.set(key, jsonpickle.encode(value))
 
-    async def delete_data_by_key(self, key):
-        connection = self.__get_connection()
-        await connection.delete(key)
-        await connection.close()
+    def delete_data_by_key(self, key: str):
+        self.client.delete(key)
 
-    async def delete_cache_with_prefix(self, prefix):
-        connection = self.__get_connection()
-        keys_with_prefix = connection.scan_iter(match=prefix + "_*")
-        async for key in keys_with_prefix:
-            await connection.delete(key)
-        await connection.close()
+    def delete_cache_with_prefix(self, prefix: str):
+        keys_with_prefix = self.client.scan_iter(match=prefix + "_*")
+        for key in keys_with_prefix:
+            self.client.delete(key)
 
-    async def delete_all_cache(self):
-        connection = self.__get_connection()
-        async for key in connection.scan_iter():
-            await connection.delete(key)
-        await connection.close()
+    def delete_all_cache(self):
+        for key in self.client.scan_iter():
+            self.client.delete(key)
 
-    async def health_check(self) -> bool:
-        connection = self.__get_connection()
+    def health_check(self) -> bool:
         try:
-            await connection.ping()
-        except (redis.ConnectionError, ConnectionRefusedError):
+            self.client.ping()
+        except (redis.ConnectionError, redis.ConnectionRefusedError):
             return False
-        await connection.close()
         return True

@@ -30,7 +30,8 @@ def get_task_status(task_id):
     task_result = AsyncResult(id=task_id)
     res = {
         "id": task_id,
-        "status": task_result.ready()
+        "status": task_result.status,
+        "state": task_result.state
     }
     return res
 
