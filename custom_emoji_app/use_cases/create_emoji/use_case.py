@@ -1,8 +1,3 @@
-import base64
-from io import BytesIO
-
-from PIL import Image
-
 from custom_emoji_app.entities.emoji import Emoji
 from custom_emoji_app.use_cases.create_emoji.Irepo import ICreateEmojiRepository
 from custom_emoji_app.use_cases.create_emoji.Iuse_case import ICreateEmoji

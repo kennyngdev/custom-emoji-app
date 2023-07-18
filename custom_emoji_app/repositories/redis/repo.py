@@ -17,6 +17,30 @@ class RedisRepository:
             "db": os.getenv('REDIS_DB')}
         self.client = redis.Redis(**self.connection_parameter)
 
+
+    def name_already_exists(self, name: str) -> bool:
+        result = self.client.get(name)
+        if result:
+            return True
+        return False
+
+    def save_emoji(self, name: str, image_data: str):
+        self.client.set(name, image_data)
+
+    def get_all_emojis(self):
+        res = dict()
+        for key in self.client.scan_iter():
+            decoded_key = key.decode("utf-8")
+            val = self.client.get(key)
+            res[decoded_key] = val.decode("utf-8")
+        return res
+
+    def get_emoji_by_name(self, name):
+        res = self.client.get(name)
+        if res:
+            return res.decode('utf-8')
+        raise ValueError(f'No value found by the name {name}')
+
     def get_data_by_key(self, key: str):
         res = self.client.get(key)
         if res:
@@ -52,26 +76,3 @@ class RedisRepository:
         except (redis.ConnectionError, redis.ConnectionRefusedError):
             return False
         return True
-
-    def check_if_name_already_exists(self, key: str) -> bool:
-        result = self.client.get(key)
-        if result:
-            return True
-        return False
-
-    def save_emoji(self, name: str, image_data: str):
-        self.client.set(name, image_data)
-
-    def get_all_emojis(self):
-        res = dict()
-        for key in self.client.scan_iter():
-            decoded_key = key.decode("utf-8")
-            val = self.client.get(key)
-            res[decoded_key] = val.decode("utf-8")
-        return res
-
-    def get_emoji_by_name(self, name):
-        res = self.client.get(name)
-        if res:
-            return res.decode('utf-8')
-        raise ValueError(f'No value found by the name {name}')

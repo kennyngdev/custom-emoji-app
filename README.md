@@ -1,7 +1,10 @@
 # Cogent Labs Assignment
 
 ## Tech Stack
-Tool: Kompose
+Language: Python
+Framework: FastAPI, Celery
+Database: Redis
+Software Tool: RabbitMQ, Kompose
 
 ## Usage
 Swagger URL: http://localhost:8000/docs
@@ -30,7 +33,7 @@ status of the job later.
 2. A user should be able to check the status of a job by submitting its ID to the API. The API should return the current status of the job (e.g.
 "processing", "succeeded", "failed").
 3. A user should be able to fetch the thumbnail image via API once the Job has succeeded processing.
-4. A user should be able to list all of the submitted jobs via API in case they forgot one of their Job ID.
+4. A user should be able to list all the submitted jobs via API in case they forgot one of their Job ID.
 
 * You do NOT need to support multiple user accounts or authorization. Instead, you can assume that anyone with access to the API is allowed
 to perform any API operation (viewing processed thumbnails, etc.).

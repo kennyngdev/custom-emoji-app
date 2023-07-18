@@ -3,7 +3,6 @@ import base64
 from fastapi import APIRouter, UploadFile, HTTPException, File
 
 from custom_emoji_app.repositories.redis.repo import RedisRepository
-from custom_emoji_app.use_cases.create_emoji.use_case import CreateEmoji
 from custom_emoji_app.use_cases.get_emojis.input_dto import GetEmojiByNameInputDto
 from custom_emoji_app.use_cases.get_emojis.use_case import GetEmojis
 from worker.tasks import upload_emoji
@@ -14,7 +13,6 @@ custom_emoji_router = APIRouter(
 )
 
 
-# TODO
 @custom_emoji_router.get('/emojis')
 async def get_all_emojis():
     repo = RedisRepository()
@@ -34,9 +32,15 @@ async def get_emoji_by_name(name: str):
 
 @custom_emoji_router.post('/emojis')
 async def create_emoji(name: str, file: UploadFile = File(None)):
+    repo = RedisRepository()
+    # Name check:
     # Throw error if no name is defined
     if not name:
         return HTTPException(status_code=400, detail="No name for emoji specified.")
+    if repo.name_already_exists(name):
+        return HTTPException(status_code=400, detail="Emoji with the same name already exists")
+
+    # File check:
     # Throw error if no file is uploaded
     if not file:
         return HTTPException(status_code=400, detail="No file uploaded.")
