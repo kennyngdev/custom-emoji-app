@@ -8,7 +8,7 @@ class GetEmojis(IGetEmojis):
         self.repository = repository
 
     def get_all_emojis(self):
-        return await self.repository.get_all_emojis()
+        return self.repository.get_all_emojis()
 
     def get_emoji_by_name(self, input_dto: GetEmojiByNameInputDto):
-        return await self.get_emoji_by_name(input_dto.name)
+        return self.repository.get_emoji_by_name(input_dto.name)

@@ -2,6 +2,10 @@ from celery import Celery
 from asgiref.sync import async_to_sync
 import asyncio
 
+from custom_emoji_app.repositories.redis.repo import RedisRepository
+from custom_emoji_app.use_cases.create_emoji.input_dto import CreateEmojiInputDto
+from custom_emoji_app.use_cases.create_emoji.use_case import CreateEmoji
+
 
 # celery config
 # TODO: review settings
@@ -35,3 +39,11 @@ def example_task(user_input):
     # Turning async function into a sync one, as async functions are not supported in celery
     async_service_to_sync = async_to_sync(wait_10_sec_and_return)
     return async_service_to_sync(user_input)
+
+
+@app.task
+def upload_emoji(name: str, image_data: str):
+    input_dto = CreateEmojiInputDto(name=name, image_data=image_data)
+    repo = RedisRepository()
+    use_case = CreateEmoji(repository=repo)
+    return use_case(input_dto)
