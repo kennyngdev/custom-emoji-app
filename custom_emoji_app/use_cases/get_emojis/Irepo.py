@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
 
+from custom_emoji_app.entities.emoji import Emoji
 from custom_emoji_app.use_cases.get_emojis.input_dto import GetEmojiByNameInputDto
 
 
 class IGetEmojisRepository(ABC):
     @abstractmethod
-    def get_all_emojis(self):
+    def get_all_emojis(self) -> list[Emoji]:
         pass
 
     @abstractmethod

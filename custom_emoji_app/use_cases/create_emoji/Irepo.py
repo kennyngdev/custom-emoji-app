@@ -4,7 +4,7 @@ from typing import Any
 
 class ICreateEmojiRepository(ABC):
     @abstractmethod
-    def check_if_name_already_exists(self, key: str) -> bool:
+    def name_already_exists(self, key: str) -> bool:
         pass
 
     @abstractmethod

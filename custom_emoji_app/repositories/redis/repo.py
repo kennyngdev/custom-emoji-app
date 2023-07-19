@@ -5,10 +5,14 @@ import jsonpickle
 import redis
 from dotenv import load_dotenv
 
+from custom_emoji_app.entities.emoji import Emoji
+from custom_emoji_app.use_cases.create_emoji.Irepo import ICreateEmojiRepository
+from custom_emoji_app.use_cases.get_emojis.Irepo import IGetEmojisRepository
+
 load_dotenv()
 
 
-class RedisRepository:
+class RedisRepository(ICreateEmojiRepository, IGetEmojisRepository):
     def __init__(self):
         # read redis configuration parameter from env
         self.connection_parameter = {
@@ -16,7 +20,6 @@ class RedisRepository:
             "port": os.getenv('REDIS_PORT'),
             "db": os.getenv('REDIS_DB')}
         self.client = redis.Redis(**self.connection_parameter)
-
 
     def name_already_exists(self, name: str) -> bool:
         result = self.client.get(name)
@@ -27,52 +30,17 @@ class RedisRepository:
     def save_emoji(self, name: str, image_data: str):
         self.client.set(name, image_data)
 
-    def get_all_emojis(self):
-        res = dict()
+    def get_all_emojis(self) -> list[Emoji]:
+        res = list()
         for key in self.client.scan_iter():
             decoded_key = key.decode("utf-8")
             val = self.client.get(key)
-            res[decoded_key] = val.decode("utf-8")
+            val = val.decode("utf-8")
+            res.append(Emoji(name=decoded_key, image_data=val))
         return res
 
-    def get_emoji_by_name(self, name):
+    def get_emoji_by_name(self, name) -> Emoji:
         res = self.client.get(name)
         if res:
-            return res.decode('utf-8')
-        raise ValueError(f'No value found by the name {name}')
-
-    def get_data_by_key(self, key: str):
-        res = self.client.get(key)
-        if res:
-            return res.decode('utf-8')
-        raise ValueError(f'No value found by the key {key}')
-
-    def get_all_data(self):
-        res = dict()
-        for key in self.client.scan_iter():
-            decoded_key = key.decode("utf-8")
-            val = self.client.get(key)
-            res[decoded_key] = val.decode("utf-8")
-        return res
-
-    def set_data(self, key: str, value: Any):
-        self.client.set(key, jsonpickle.encode(value))
-
-    def delete_data_by_key(self, key: str):
-        self.client.delete(key)
-
-    def delete_cache_with_prefix(self, prefix: str):
-        keys_with_prefix = self.client.scan_iter(match=prefix + "_*")
-        for key in keys_with_prefix:
-            self.client.delete(key)
-
-    def delete_all_cache(self):
-        for key in self.client.scan_iter():
-            self.client.delete(key)
-
-    def health_check(self) -> bool:
-        try:
-            self.client.ping()
-        except (redis.ConnectionError, redis.ConnectionRefusedError):
-            return False
-        return True
+            return Emoji(name=name, image_data=res.decode('utf-8'))
+        raise ValueError(f'No emoji found by the name {name}')

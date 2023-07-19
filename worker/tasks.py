@@ -1,3 +1,5 @@
+import os
+
 from celery import Celery
 from asgiref.sync import async_to_sync
 import asyncio
@@ -21,7 +23,9 @@ class CeleryConfig:
 
 
 # Initializing celery app
-app = Celery('tasks', backend='redis://redis:6379', broker='pyamqp://rabbitmq:5672')
+app = Celery('tasks',
+             backend=f'redis://{os.getenv("REDIS_HOST")}:{os.getenv("REDIS_PORT")}',
+             broker=f'pyamqp://{os.getenv("RABBITMQ_HOST")}:{os.getenv("RABBITMQ_PORT")}')
 # Apply Configurations
 app.set_default()
 app.config_from_object(CeleryConfig)

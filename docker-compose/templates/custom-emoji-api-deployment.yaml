@@ -2,36 +2,33 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: kompose --file docker-compose.yml convert -c
+    kompose.cmd: kompose convert -f docker-compose.yml -c
     kompose.version: 1.28.0 (c4137012e)
   creationTimestamp: null
   labels:
-    io.kompose.service: worker
-  name: worker
+    io.kompose.service: custom-emoji-api
+  name: custom-emoji-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: worker
+      io.kompose.service: custom-emoji-api
   strategy: {}
   template:
     metadata:
       annotations:
-        kompose.cmd: kompose --file docker-compose.yml convert -c
+        kompose.cmd: kompose convert -f docker-compose.yml -c
         kompose.version: 1.28.0 (c4137012e)
       creationTimestamp: null
       labels:
         io.kompose.network/cogent-labs-assignment-default: "true"
-        io.kompose.service: worker
+        io.kompose.service: custom-emoji-api
     spec:
       containers:
-        - args:
-            - celery
-            - -A
-            - worker.tasks
-            - worker
-          image: worker:latest
-          name: worker
+        - image: api:1.0.0
+          name: custom-emoji-api
+          ports:
+            - containerPort: 8000
           resources: {}
       restartPolicy: Always
 status: {}

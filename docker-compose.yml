@@ -1,40 +1,40 @@
 version: '3'
 
 services:
-  redis:
+  redis-db:
     image: redis
     ports:
-      - 6379:6379
+      - "6379:6379"
     volumes:
       - ./redis-volume:/data
 
-  rabbitmq:
+  message-queue:
     image: rabbitmq
     ports:
-      - 5672:5672
-      - 15672:15672
+      - "5672:5672"
+      - "15672:15672"
 
-  api:
-    image: api:latest
+  custom-emoji-api:
+    image: api:1.0.0
     ports:
-      - 8000:8000
+      - "8000:8000"
     depends_on:
-      - rabbitmq
-      - redis
+      - message-queue
+      - redis-db
 
-  worker:
-    image: worker:latest
+  task-worker:
+    image: worker:1.0.0
     command: celery -A worker.tasks worker
     depends_on:
-      - rabbitmq
-      - redis
+      - message-queue
+      - redis-db
 
   task-queue-dashboard:
-    image: worker:latest
+    image: worker:1.0.0
     command: celery -A worker.tasks flower --port=5555
     ports:
-      - 5555:5555
+      - "5555:5555"
     depends_on:
-      - api
-      - redis
-      - worker
+      - custom-emoji-api
+      - redis-db
+      - task-worker

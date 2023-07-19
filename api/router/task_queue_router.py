@@ -14,39 +14,38 @@ FLOWER_API_URL = "http://task-queue-dashboard:5555/api/tasks"
 
 
 @task_queue_router.get("/status")
-def get_task_status(task_id):
+def get_task_status(task_id: str):
+    """
+    ## Get Task Status by ID
+
+    ### Parameters
+
+    - **task_id** (query parameter): ID of the task.
+
+    ### Response
+
+    - **200 OK** - A dictionary with the task ID and status (`PENDING`, `STARTED`, `RETRY`, `FAILURE`, `SUCCESS`).
+    """
     task_result = AsyncResult(id=task_id)
     res = {
         "id": task_id,
-        "status": task_result.status,
-        "state": task_result.state
+        "status": task_result.status
     }
     return res
 
 
-@task_queue_router.get("/result")
-def get_result(task_id):
-    task_result = AsyncResult(task_id)
-    result = {
-        "id": task_id,
-        "task_result": task_result.get()
-    }
-    return result
-
-
 @task_queue_router.get("/tasks")
 def list_all_tasks():
+    """
+    ## List All Tasks
+
+    ### Description
+    List all tasks in the task queue.
+
+    ### Response
+    - **200 OK** - A list of all tasks and their statuses in the queue.
+    """
+
     response = requests.get(FLOWER_API_URL)
     response.raise_for_status()
     return response.json()
-
-
-class ExampleInputModel(BaseModel):
-    message: str = ''
-
-
-@task_queue_router.post("/example_task")
-def run_task(input_dto: ExampleInputModel):
-    json_body = input_dto.model_dump()
-    result = example_task.delay(json_body)
-    return {'task_id': result.id}
