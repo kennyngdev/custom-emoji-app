@@ -1,8 +1,7 @@
 import os
+import traceback
 
-from celery import Celery
-from asgiref.sync import async_to_sync
-import asyncio
+from celery import Celery, states
 
 from custom_emoji_app.repositories.redis.repo import RedisRepository
 from custom_emoji_app.use_cases.create_emoji.input_dto import CreateEmojiInputDto
@@ -31,24 +30,19 @@ app.set_default()
 app.config_from_object(CeleryConfig)
 
 
-@app.task
-def upload_emoji(name: str, image_data: str):
-    input_dto = CreateEmojiInputDto(name=name, image_data=image_data)
-    repo = RedisRepository()
-    use_case = CreateEmoji(repository=repo)
-    return use_case(input_dto)
-
-
-
-# A dummy async function which emulates the behavior of computations
-async def wait_10_sec_and_return(user_input):
-    await asyncio.sleep(10)
-    return user_input['message']
-
-
-@app.task
-def example_task(user_input):
-    # Turning async function into a sync one, as async functions are not supported in celery
-    async_service_to_sync = async_to_sync(wait_10_sec_and_return)
-    return async_service_to_sync(user_input)
-
+@app.task(bind=True)
+def upload_emoji(self, name: str, image_data: str):
+    try:
+        input_dto = CreateEmojiInputDto(name=name, image_data=image_data)
+        repo = RedisRepository()
+        use_case = CreateEmoji(repository=repo)
+        return use_case(input_dto)
+    except Exception as ex:
+        self.update_state(
+            state=states.FAILURE,
+            meta={
+                'exc_type': type(ex).__name__,
+                'exc_message': traceback.format_exc().split('\n'),
+                'custom': 'emoji processing task failed.'
+            }
+        )

@@ -53,7 +53,7 @@ async def get_emoji_by_name(name: str):
         image_bytes = use_case.get_emoji_by_name(input_dto)
         return Response(content=image_bytes, media_type='image/gif')
     except ValueError as e:
-        return HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @custom_emoji_router.post('/emojis')
@@ -75,15 +75,15 @@ async def create_emoji(name: str, file: UploadFile = File(None)):
     # Name check:
     # Throw error if no name is defined
     if not name:
-        return HTTPException(status_code=400, detail="No name for emoji specified.")
+        raise HTTPException(status_code=400, detail="No name for emoji specified.")
     # Throw error if name already exists
     if repo.name_already_exists(name):
-        return HTTPException(status_code=400, detail="Emoji with the same name already exists")
+        raise HTTPException(status_code=400, detail="Emoji with the same name already exists")
 
     # File check:
     # Throw error if no file is uploaded
     if not file:
-        return HTTPException(status_code=400, detail="No file uploaded.")
+        raise HTTPException(status_code=400, detail="No file uploaded.")
 
     # Get the file size (in bytes)
     file.file.seek(0, 2)

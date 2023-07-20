@@ -1,4 +1,4 @@
-# Cogent Labs Assignment
+# Custom Emoji App
 
 Welcome. This is an API application which allows users to create custom emojis for communication apps by creating small thumbnail images. Leveraging a long-running task queue, this application handles the functionalities of accepting image files, creating thumbnails, and making them retrievable once the processing is complete.
 
@@ -8,6 +8,7 @@ Welcome. This is an API application which allows users to create custom emojis f
 - **Database:** Redis
 - **Message Queue:** RabbitMQ
 - **Software Tools:** Kompose, Kind
+- **Testing Libraries:** pytest, unittest
 
 ## Discussion
 ### Tech Stack
@@ -37,7 +38,7 @@ with clean architecture, such change is not difficult to make.
 I adopted Clean Architecture, a famous and widely adopted hexagonal architecture created by Robert Martin(aka Uncle Bob).
 This architecture allows loosely coupling of application components, and separation of business logic from frameworks, UI, DB or other external agencies.
 In this app, all business logics reside in the domain layer (entities and use cases); and through the use of interfaces, 
-such logics do not depend on celery, fastAPI nor Redis (the stack used in this app).
+such logics do not depend on celery, fastAPI nor Redis (the stack used in this app).　Instead, through dependency inversion, external frameworks depend on business logic. (For example, RedisRepository depends on the Emoji entity)
 For example, if one wants to use PostgresSQL to store the emojis, they just need to implement the methods according to the interface,
 and through some minor adjustments in the controller, it can fit right into the application. This allows an easy change of tech stack and the application can utilize different technologies as needed.
 
@@ -45,10 +46,16 @@ Separating coding components into different layers also allow easier testing (an
 Unit test can be written as ease as business logic is separated from repository implementation(like redis access code), 
 and mocks and stubs can be easily created to emulate external components' behavior. 
 
+### Tests
+I used pytest and unittest to write unit tests for the application. I covered the different components I implemented: 
+entities, use cases, repositories, router and worker.
+
 ### Tradeoffs
-I could have written more tests to cover edge cases. 
 With a normal daytime job and other duties, it is difficult to dedicate time to strike a balance between developing time and test coverage.
-However, In my opinion I did cover enough base cases for the application. 
+If I had more time, I could have written more tests to cover edge cases. However, In my opinion I did cover enough base cases for the application, at least as a PoC. 
+
+Also having an integration test module to actually test out the connectivity of celery, redis, rabbitMQ and fastAPI would be nice,
+but that would require a significant amount of time to do so, in which I couldn't with the time limit.
 
 A different database like MySQL could be used, in a use case that we needed to control the usage/availability of emojis. 
 However, I think for this application's specification, it might be an overkill, and it would take extra time to develop.
@@ -67,6 +74,10 @@ So I stick with Redis since it is more time sufficient, and it also fits well wi
 - Cloud message services like Amazon MQ might be utilized for its ease of management.
 - If there are other demanding jobs in the future, extra celery workers can also be added.
 
+**Tests**:
+- More unit tests to cover edge cases
+- Integration test module to test out the connectivity with external frameworks
+
 ## Installation and Setup
 You can set up and run this application using Kubernetes with Helm or Docker Compose. Follow the instructions below based on your choice.
 
@@ -76,7 +87,7 @@ You can set up and run this application using Kubernetes with Helm or Docker Com
     docker build . -f worker.Dockerfile -t worker:1.0.0
     docker build . -f api.Dockerfile -t api:1.0.0
     ```
-2. **Convert Docker compose file to Helm charts:** Use Kompose to convert the docker-compose file and generate Helm charts:
+2. **Convert Docker compose file to Helm charts(if docker-compose directory doesn't exist yet):** Use Kompose to convert the docker-compose file and generate Helm charts:
     ```shell
     kompose convert -f docker-compose.yml -c
     ```

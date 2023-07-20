@@ -2,8 +2,6 @@ import requests
 
 from celery.result import AsyncResult
 from fastapi import APIRouter
-from pydantic import BaseModel
-from worker.tasks import example_task
 
 task_queue_router = APIRouter(
     prefix='/task-queue',

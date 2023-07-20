@@ -1,8 +1,20 @@
-name: docker-compose
-description: A generated Helm Chart for docker-compose from Skippbox Kompose
-version: 0.0.1
-apiVersion: v1
+apiVersion: v2
+name: custom-emoji-app
+version: 1.0.0
+description: A Helm chart for the Custom Emoji Application
+
+maintainers:
+  - name: Kenny Ng
+    email: contact@kennyng.dev
+
 keywords:
-  - docker-compose
+  - custom emoji
+  - application
+  - fastapi
+  - celery
+  - rabbitmq
+
 sources:
-home:
+  - https://github.com/kennyngdev/custom-emoji-app
+
+home: https://github.com/kennyngdev
