@@ -93,21 +93,23 @@ You can set up and run this application using Kubernetes with Helm or Docker Com
     docker build . -f worker.Dockerfile -t worker:1.0.0
     docker build . -f api.Dockerfile -t api:1.0.0
     ```
-2. **(Optional: only if docker-compose directory doesn't exist yet) Convert Docker compose file to Helm charts:** Use Kompose to convert the docker-compose file and generate Helm charts:
-    ```shell
-    kompose convert -f docker-compose.yml -c
-    ```
-3. **Create a Kubernetes cluster:** Run `kind create cluster` to create a local Kubernetes cluster.
-4. **Load Docker images into the cluster:** Load locally built Docker images into the cluster:
+2. **Create a Kubernetes cluster:** Run `kind create cluster` to create a local Kubernetes cluster.
+3. **Load Docker images into the cluster:** Load locally built Docker images into the cluster:
     ```shell
     kind load docker-image worker:1.0.0
     kind load docker-image api:1.0.0
     ```
-5. **Install the app onto the cluster:** Run `helm install custom-emoji-app ./docker-compose` to install the application onto the cluster.
-6. **Verify the application deployment:** Run `kubectl get all` to check if the application is correctly deployed.
-7. **Delete the cluster:** After you're done, run `kind delete cluster` to delete the cluster.
+4. **Install the app onto the cluster:** Run `helm install custom-emoji-app ./docker-compose` to install the application onto the cluster.
+5. **Verify the application deployment:** Run `kubectl get all` to check if the application is correctly deployed.
+6. **Delete the cluster:** After you're done, run `kind delete cluster` to delete the cluster.
 
+**(Optional: Only if docker-compose directory doesn't exist yet) Convert Docker compose file to Helm charts:** 
 
+Use Kompose to convert the docker-compose file and generate Helm charts:
+    ```shell
+    kompose convert -f docker-compose.yml -c
+    ```
+   
 ### Docker Setup
 1. **Build Docker images:** For both Celery and the API, use the commands below to build Docker images:
     ```shell
