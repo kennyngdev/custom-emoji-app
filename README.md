@@ -145,6 +145,18 @@ While the full documentation is accessible from the Swagger UI, here is a brief 
 You can visit the flower dashboard from `localhost:5555`, 
 which acts as a monitoring tool for task worker and task statuses.
 
+### Testing
+You can run unit test locally with pytest.
+First, create a venv, activate it, and install the requirements:
+```shell
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+Then, you can run the tests by `pytest`.
+You can also specify which tests to be run with markers indicated in `pytest.ini`.
+For example, you can run `pytest -m entities` to only run tests on entities.
+
 ### Debugging
 If you have built and deployed the application with kubernetes, you can use the following command to export logs.
 ```shell
