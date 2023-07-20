@@ -2,6 +2,7 @@
 
 Welcome. This is an API application which allows users to create custom emojis for communication apps by creating small thumbnail images. Leveraging a long-running task queue, this application handles the functionalities of accepting image files, creating thumbnails, and making them retrievable once the processing is complete.
 
+This Application is created by Kenny Ng (contact@kennyng.dev).
 ## Technology Stack
 - **Language:** Python
 - **Frameworks:** FastAPI, Celery
