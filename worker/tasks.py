@@ -7,6 +7,9 @@ from custom_emoji_app.repositories.redis.repo import RedisRepository
 from custom_emoji_app.use_cases.create_emoji.input_dto import CreateEmojiInputDto
 from custom_emoji_app.use_cases.create_emoji.use_case import CreateEmoji
 
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # celery config
 class CeleryConfig:

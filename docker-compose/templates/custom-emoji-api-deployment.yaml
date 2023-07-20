@@ -21,11 +21,22 @@ spec:
         kompose.version: 1.28.0 (c4137012e)
       creationTimestamp: null
       labels:
-        io.kompose.network/cogent-labs-assignment-default: "true"
+        io.kompose.network/custom-emoji-app-default: "true"
         io.kompose.service: custom-emoji-api
     spec:
       containers:
-        - image: api:1.0.0
+        - env:
+            - name: RABBITMQ_HOST
+              value: message-queue
+            - name: RABBITMQ_PORT
+              value: "5672"
+            - name: REDIS_DB
+              value: "1"
+            - name: REDIS_HOST
+              value: redis-db
+            - name: REDIS_PORT
+              value: "6379"
+          image: api:1.0.0
           name: custom-emoji-api
           ports:
             - containerPort: 8000

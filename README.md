@@ -46,6 +46,11 @@ Separating coding components into different layers also allow easier testing (an
 Unit test can be written as ease as business logic is separated from repository implementation(like redis access code), 
 and mocks and stubs can be easily created to emulate external components' behavior. 
 
+### Infrastructure
+Components are wrapped into Docker container, which is then deployed to k8s through helm charts.
+Helm is used to compose the kubernetes settings. As I haven't touched k8s in the past. I used kompose to convert my docker-compose file
+into helm charts. 
+
 ### Tests
 I used pytest and unittest to write unit tests for the application. I covered the different components I implemented: 
 entities, use cases, repositories, router and worker.
@@ -73,6 +78,7 @@ So I stick with Redis since it is more time sufficient, and it also fits well wi
 - FastAPI can be run using gunicorn instead of unicorn to handle greater load and to utilize multicore CPUs.
 - Cloud message services like Amazon MQ might be utilized for its ease of management.
 - If there are other demanding jobs in the future, extra celery workers can also be added.
+- Helm Charts/Kubernetes setup can be optimized for better scaling and configuration of resources.
 
 **Tests**:
 - More unit tests to cover edge cases
@@ -87,7 +93,7 @@ You can set up and run this application using Kubernetes with Helm or Docker Com
     docker build . -f worker.Dockerfile -t worker:1.0.0
     docker build . -f api.Dockerfile -t api:1.0.0
     ```
-2. **Convert Docker compose file to Helm charts(if docker-compose directory doesn't exist yet):** Use Kompose to convert the docker-compose file and generate Helm charts:
+2. **(Optional: only if docker-compose directory doesn't exist yet) Convert Docker compose file to Helm charts:** Use Kompose to convert the docker-compose file and generate Helm charts:
     ```shell
     kompose convert -f docker-compose.yml -c
     ```
@@ -144,3 +150,4 @@ kind export logs
 ```
 Then, you can visit the directory outputted to see the logs of the services.
 If you deployed the application with Docker Compose, you can just see the logs directly through Docker Desktop.
+

@@ -21,7 +21,7 @@ spec:
         kompose.version: 1.28.0 (c4137012e)
       creationTimestamp: null
       labels:
-        io.kompose.network/cogent-labs-assignment-default: "true"
+        io.kompose.network/custom-emoji-app-default: "true"
         io.kompose.service: task-queue-dashboard
     spec:
       containers:
@@ -31,6 +31,17 @@ spec:
             - worker.tasks
             - flower
             - --port=5555
+          env:
+            - name: FLOWER_UNAUTHENTICATED_API
+              value: "true"
+            - name: RABBITMQ_HOST
+              value: message-queue
+            - name: RABBITMQ_PORT
+              value: "5672"
+            - name: REDIS_HOST
+              value: redis-db
+            - name: REDIS_PORT
+              value: "6379"
           image: worker:1.0.0
           name: task-queue-dashboard
           ports:

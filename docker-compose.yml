@@ -18,12 +18,25 @@ services:
     image: api:1.0.0
     ports:
       - "8000:8000"
+    environment:
+      - REDIS_HOST=redis-db
+      - REDIS_PORT=6379
+      - REDIS_DB=1
+      - RABBITMQ_HOST=message-queue
+      - RABBITMQ_PORT=5672
     depends_on:
       - message-queue
       - redis-db
+      - task-worker
 
   task-worker:
     image: worker:1.0.0
+    environment:
+      - REDIS_HOST=redis-db
+      - REDIS_PORT=6379
+      - REDIS_DB=1
+      - RABBITMQ_HOST=message-queue
+      - RABBITMQ_PORT=5672
     command: celery -A worker.tasks worker
     depends_on:
       - message-queue
@@ -31,6 +44,12 @@ services:
 
   task-queue-dashboard:
     image: worker:1.0.0
+    environment:
+      - REDIS_HOST=redis-db
+      - REDIS_PORT=6379
+      - RABBITMQ_HOST=message-queue
+      - RABBITMQ_PORT=5672
+      - FLOWER_UNAUTHENTICATED_API=true
     command: celery -A worker.tasks flower --port=5555
     ports:
       - "5555:5555"

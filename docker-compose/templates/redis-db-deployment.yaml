@@ -22,7 +22,7 @@ spec:
         kompose.version: 1.28.0 (c4137012e)
       creationTimestamp: null
       labels:
-        io.kompose.network/cogent-labs-assignment-default: "true"
+        io.kompose.network/custom-emoji-app-default: "true"
         io.kompose.service: redis-db
     spec:
       containers:
